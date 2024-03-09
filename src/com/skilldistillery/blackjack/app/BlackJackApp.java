@@ -7,6 +7,7 @@ import com.skilldistillery.blackjack.cards.Card;
 import com.skilldistillery.blackjack.game.Dealer;
 import com.skilldistillery.blackjack.game.Player;
 import com.ventura.util.ConsoleEffect;
+import com.ventura.util.VerifyScanner;
 
 public class BlackJackApp implements ConsoleEffect {
 
@@ -23,65 +24,81 @@ public class BlackJackApp implements ConsoleEffect {
 
 		ArrayList<Player> players = new ArrayList<>();
 
-		int numOfPlayers = 2;
+		Dealer dealer = new Dealer();
+
+		addPlayers(1, players, dealer);
+
+		dealer.grabDeck();
+
+		boolean deal = true;
+
+		while (deal) {
+			dealer.checkDeckCount();
+			dealer.shuffleDeck();
+
+			dealer.dealToPlayers(players, dealer, players.size() - 1);
+
+			int playerCount = 1;
+
+			for (Player player : players) {
+				System.out.println();
+
+				boolean endTurn = false;
+
+				if (player.getCardSum() == 21 && !(player instanceof Dealer)) {
+					System.out.println(green + "Player " + playerCount + " BlackJack!" + reset);
+					continue;
+				}
+
+				if (checkPlayersStatus(players)) {
+					System.out.println(player.toString() + " " + green + playerCount + " " + "Turn" + reset);
+				}
+
+				while (!endTurn) {
+
+					if (player instanceof Dealer) {
+
+						endTurn = dealerTurn(players, player, dealer);
+
+					} else {
+						player.getStats();
+						playerOptions();
+						endTurn = playerGameSelection(sc, player, dealer);
+						if (player.getCardSum() > 21) {
+							System.out.println(green + "Player " + playerCount + ": " + red + player.getCardSum() + " "
+									+ "BUST!" + reset);
+							break;
+						}
+					}
+				}
+
+			}
+			System.out.println();
+			showWinner(players, dealer);
+			System.out.println();
+			clearAllHands(players);
+
+			if (dealer.checkLowDeck()) {
+				dealer.returnCards();
+			}
+		}
+
+		sc.close();
+	}
+
+	private void addPlayers(int numOfPlayers, ArrayList<Player> players, Dealer dealer) {
 		for (int i = 0; i < numOfPlayers; i++) {
 			players.add(new Player());
 		}
 
-		Dealer dealer = new Dealer();
 		players.add(dealer);
+	}
 
-
-
-		dealer.grabDeck();
-
-
-		dealer.shuffleDeck();
-
-		dealer.dealToPlayers(players, dealer, numOfPlayers);
-
+	private void clearAllHands(ArrayList<Player> players) {
 		for (Player player : players) {
-			boolean endTurn = false;
-
-			if (player.getCardSum() == 21 && !(player instanceof Dealer)) {
-				System.out.println("BlackJack");
-				continue;
-			}
-			if (checkPlayersStatus(players)) {
-				System.out.println(player.toString() + "Turn");
-			}
-
-			while (!endTurn) {
-
-				if (player instanceof Dealer) {
-					if (checkPlayersStatus(players)) {
-						player.getStats();
-
-						if (player.getCardSum() > 17) {
-							endTurn = true;
-						} else {
-							Card cardDelt = dealer.dealCard();
-							System.out.println(magenta + cardDelt + reset);
-							player.addToHand(cardDelt);
-						}
-					} else {
-						endTurn = true;
-					}
-
-				} else {
-					player.getStats();
-					playerOptions();
-					endTurn = playerGameSelection(sc, player, dealer);
-					if (player.getCardSum() > 21) {
-						System.out.println(red + player.getCardSum() + " " + "BUST!" + reset);
-						endTurn = true;
-					}
-				}
-			}
-
+			player.clearHand();
 		}
-		showWinner(players, dealer);
-		sc.close();
+
 	}
 
 	public void playerOptions() {
@@ -92,11 +109,14 @@ public class BlackJackApp implements ConsoleEffect {
 
 	public boolean playerGameSelection(Scanner sc, Player player, Dealer dealer) {
 		boolean stay = false;
-		int selection = sc.nextInt();
+		String message = cyan + "Player Selection: ";
+		int selection = VerifyScanner.inputValidation(sc, "int", message, 0, 3);
 		switch (selection) {
 		case 1:
 			Card cardDelt = dealer.dealCard();
+			System.out.println();
 			System.out.println(magenta + cardDelt + reset);
+			System.out.println();
 			player.addToHand(cardDelt);
 			break;
 		case 2:
@@ -107,6 +127,7 @@ public class BlackJackApp implements ConsoleEffect {
 	}
 
 	public void showWinner(ArrayList<Player> players, Dealer dealer) {
+		System.out.println(green + "Game Results:");
 		for (int i = 0; i < players.size() - 1; i++) {
 			int playerSum = players.get(i).getCardSum();
 			int dealerSum = dealer.getCardSum();
@@ -145,5 +166,35 @@ public class BlackJackApp implements ConsoleEffect {
 		}
 
 		return playersStillInGame;
+	}
+
+	public void showGameOptions() {
+		System.out.println("1) Deal Again");
+		System.out.println("2) Quit");
+	}
+
+	public void gameOptions() {
+
+	}
+
+	public boolean dealerTurn(ArrayList<Player> players, Player player, Dealer dealer) {
+
+		boolean endTurn = false;
+
+		if (checkPlayersStatus(players)) {
+			player.getStats();
+
+			if (player.getCardSum() > 17) {
+				endTurn = true;
+			} else {
+				Card cardDelt = dealer.dealCard();
+				System.out.println(magenta + cardDelt + reset);
+				player.addToHand(cardDelt);
+			}
+		} else {
+			endTurn = true;
+		}
+		return endTurn;
+
 	}
 }

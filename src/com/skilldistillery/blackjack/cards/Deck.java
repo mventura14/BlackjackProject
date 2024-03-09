@@ -27,18 +27,22 @@ public class Deck {
 		return cards;
 	}
 
+	public int getSize() {
+		return cards.size();
+	}
+
 	public void checkSize() {
-		System.out.println(cards.size());
+		System.out.println(this.cards.size());
 	}
 
 	public Card dealCard() {
-		Card delt = this.cards.remove(cards.size() - 1);
+		Card delt = this.cards.remove(this.cards.size() - 1);
 		cardsRemoved.add(delt);
 		return delt;
 	}
 
 	public void shuffle() {
-		Collections.shuffle(cards);
+		Collections.shuffle(this.cards);
 
 	}
 

@@ -21,18 +21,26 @@ public class Dealer extends Player implements ConsoleEffect {
 		return deck.dealCard();
 	}
 
+	public void checkDeckCount() {
+		System.out.println(deck.getSize());
+	}
+
+	public boolean checkLowDeck() {
+		boolean isLow = deck.getSize() < 30;
+		return isLow;
+	}
+
 	public void shuffleDeck() {
 		deck.shuffle();
 	}
 
 	@Override
 	public String toString() {
-		return red + "Dealer: " + reset;
+		return red + "Dealer" + reset;
 	}
 
-	public void giveCard(Player player) {
-		
-		
+	public void returnCards() {
+		deck.returnCards();
 	}
 
 	public void dealToPlayers(ArrayList<Player> players, Dealer dealer, int numOfPlayers) {
@@ -44,12 +52,12 @@ public class Dealer extends Player implements ConsoleEffect {
 
 				if (player instanceof Dealer) {
 					if (i == 0) {
-						System.out.println(player.toString() + "???????");
+						System.out.println(player.toString() + red + ": " + magenta + "???????" + reset);
 					} else {
-						System.out.println(player.toString() + cardDelt);
+						System.out.println(player.toString() + red + ": " + magenta + cardDelt + reset);
 					}
 				} else {
-					System.out.println(player.toString() + cardDelt);
+					System.out.println(player.toString() + green + ": " + magenta + cardDelt + reset);
 				}
 			}
 		}

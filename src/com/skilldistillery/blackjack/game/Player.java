@@ -13,7 +13,7 @@ public class Player implements ConsoleEffect {
 	
 	@Override
 	public String toString() {
-		return green + "Player: " + reset;
+		return green + "Player" + reset;
 	}
 
 	public void addToHand(Card card) {
@@ -23,6 +23,10 @@ public class Player implements ConsoleEffect {
 	public int getCardSum() {
 		return hand.getHandValue();
 
+	}
+
+	public void clearHand() {
+		this.hand.clear();
 	}
 
 	public void getStats() {
