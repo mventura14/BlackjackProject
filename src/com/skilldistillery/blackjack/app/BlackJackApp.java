@@ -28,16 +28,16 @@ public class BlackJackApp implements ConsoleEffect {
 
 		interactiveGameMenu(sc);
 
-		String userSelection =
+		String userSelection = "Deal";
 		
 		
 		addPlayers(1, players, dealer);
 
 		dealer.grabDeck();
 
-		boolean deal = true;
+//		boolean deal = true;
 
-		while (userSelection.equals("Deal") {
+		while (userSelection.equals("Deal")) {
 //			dealer.checkDeckCount();
 			dealer.shuffleDeck();
 
