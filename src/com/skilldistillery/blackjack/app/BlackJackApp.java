@@ -26,14 +26,19 @@ public class BlackJackApp implements ConsoleEffect {
 
 		Dealer dealer = new Dealer();
 
+		interactiveGameMenu(sc);
+
+		String userSelection =
+		
+		
 		addPlayers(1, players, dealer);
 
 		dealer.grabDeck();
 
 		boolean deal = true;
 
-		while (deal) {
-			dealer.checkDeckCount();
+		while (userSelection.equals("Deal") {
+//			dealer.checkDeckCount();
 			dealer.shuffleDeck();
 
 			dealer.dealToPlayers(players, dealer, players.size() - 1);
@@ -111,6 +116,7 @@ public class BlackJackApp implements ConsoleEffect {
 		boolean stay = false;
 		String message = cyan + "Player Selection: ";
 		int selection = VerifyScanner.inputValidation(sc, "int", message, 0, 3);
+		System.out.print(reset);
 		switch (selection) {
 		case 1:
 			Card cardDelt = dealer.dealCard();
@@ -173,9 +179,20 @@ public class BlackJackApp implements ConsoleEffect {
 		System.out.println("2) Quit");
 	}
 
-	public void gameOptions() {
-
-	}
+	public void interactiveGameMenu(Scanner sc) {
+		String message = "1) Deal \n" + "2) Change number of player \n" + "3) Quit Game";
+		int userSelection = VerifyScanner.inputValidation(sc, "int", message, 0, 4);
+		
+		switch(userSelection) {
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		
+		}
+	};
 
 	public boolean dealerTurn(ArrayList<Player> players, Player player, Dealer dealer) {
 
