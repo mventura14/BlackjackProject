@@ -23,16 +23,18 @@ public class BlackJackApp implements ConsoleEffect {
 
 		ArrayList<Player> players = new ArrayList<>();
 
-		int numOfPlayers = 1;
+		int numOfPlayers = 2;
 		for (int i = 0; i < numOfPlayers; i++) {
 			players.add(new Player());
 		}
 
-		players.add(new Dealer());
+		Dealer dealer = new Dealer();
+		players.add(dealer);
 
-		Dealer dealer = (Dealer) players.get(players.size() - 1);
+
 
 		dealer.grabDeck();
+
 
 		dealer.shuffleDeck();
 
@@ -43,7 +45,7 @@ public class BlackJackApp implements ConsoleEffect {
 
 			if (player.getCardSum() == 21 && !(player instanceof Dealer)) {
 				System.out.println("BlackJack");
-				break;
+				continue;
 			}
 			if (checkPlayersStatus(players)) {
 				System.out.println(player.toString() + "Turn");
@@ -59,9 +61,11 @@ public class BlackJackApp implements ConsoleEffect {
 							endTurn = true;
 						} else {
 							Card cardDelt = dealer.dealCard();
-							System.out.println(cardDelt);
+							System.out.println(magenta + cardDelt + reset);
 							player.addToHand(cardDelt);
 						}
+					} else {
+						endTurn = true;
 					}
 
 				} else {
@@ -70,12 +74,13 @@ public class BlackJackApp implements ConsoleEffect {
 					endTurn = playerGameSelection(sc, player, dealer);
 					if (player.getCardSum() > 21) {
 						System.out.println(red + player.getCardSum() + " " + "BUST!" + reset);
-						break;
+						endTurn = true;
 					}
 				}
 			}
 
 		}
+		showWinner(players, dealer);
 		sc.close();
 	}
 
@@ -91,7 +96,7 @@ public class BlackJackApp implements ConsoleEffect {
 		switch (selection) {
 		case 1:
 			Card cardDelt = dealer.dealCard();
-			System.out.println(cardDelt);
+			System.out.println(magenta + cardDelt + reset);
 			player.addToHand(cardDelt);
 			break;
 		case 2:
@@ -101,9 +106,33 @@ public class BlackJackApp implements ConsoleEffect {
 		return stay;
 	}
 
-	public void showWinner() {
+	public void showWinner(ArrayList<Player> players, Dealer dealer) {
+		for (int i = 0; i < players.size() - 1; i++) {
+			int playerSum = players.get(i).getCardSum();
+			int dealerSum = dealer.getCardSum();
 
-	};
+			System.out.println("Player: " + playerSum + " Dealer: " + dealerSum);
+
+			System.out.print(cyan);
+			if (playerSum <= 21) {
+				if (dealerSum <= 21) {
+					if (playerSum == dealerSum) {
+						System.out.println("DRAW");
+					} else if (playerSum > dealerSum) {
+						System.out.println("PLAYER WINS!");
+					} else {
+						System.out.println("DEALER WINS");
+					}
+				} else {
+					System.out.println("PLAYER WINS!");
+				}
+			} else {
+				System.out.println("DEALER WINS!");
+			}
+			System.out.print(reset);
+		}
+
+	}
 
 	public boolean checkPlayersStatus(ArrayList<Player> players) {
 
