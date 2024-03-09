@@ -13,7 +13,7 @@ public class Card {
 
 	@Override
 	public String toString() {
-		return this.rank + "of" + this.suit;
+		return this.rank + " of " + this.suit;
 	}
 
 	public int getValue() {

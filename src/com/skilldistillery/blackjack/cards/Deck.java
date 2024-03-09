@@ -8,6 +8,8 @@ public class Deck {
 
 	private List<Card> cards;
 
+	private List<Card> cardsRemoved = new ArrayList<>();
+
 	public Deck() {
 		cards = createDeck();
 	}
@@ -30,13 +32,19 @@ public class Deck {
 	}
 
 	public Card dealCard() {
-//		Card removed = cards.remove(0);
-//		System.out.println(removed.toString());
-		return cards.remove(cards.size() - 1);
+		Card delt = this.cards.remove(cards.size() - 1);
+		cardsRemoved.add(delt);
+		return delt;
 	}
 
 	public void shuffle() {
 		Collections.shuffle(cards);
 
 	}
+
+	public void returnCards() {
+		this.cards.addAll(cardsRemoved);
+		cardsRemoved.removeAll(cardsRemoved);
+	}
+
 }
