@@ -8,15 +8,12 @@ public class BlackJackHand extends Hand {
 	@Override
 	public int getHandValue() {
 		int total = 0;
-		boolean hasAce = false;
 		for (Card card : cardsInHand) {
-			if (card.getValue() == 11) {
-				hasAce = true;
-			}
-
 			total += card.getValue();
+		}
 
-			if (total > 21 && hasAce) {
+		for (Card card : cardsInHand) {
+			if (total > 21 && (card.getValue() == 11)) {
 				total -= 10;
 			}
 
@@ -25,4 +22,20 @@ public class BlackJackHand extends Hand {
 		return total;
 	}
 
+	@Override
+	public String toString() {
+		String hand = "";
+		int count = 0;
+		for (Card card : cardsInHand) {
+			if (count == 0) {
+				hand += card.toString();
+				count++;
+			} else {
+				hand += ", " + card.toString();
+			}
+
+		}
+
+		return hand;
+	}
 }

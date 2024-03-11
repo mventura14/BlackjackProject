@@ -22,73 +22,97 @@ public class BlackJackApp implements ConsoleEffect {
 
 		Scanner sc = new Scanner(System.in);
 
-		ArrayList<Player> players = new ArrayList<>();
+		ArrayList<Player> players;
 
 		Dealer dealer = new Dealer();
 
-		interactiveGameMenu(sc);
+		boolean gameRunning = true;
 
-		String userSelection = "Deal";
-		
-		
-		addPlayers(1, players, dealer);
+		int numOfPlayers = 1;
 
-		dealer.grabDeck();
+		while (gameRunning) {
 
-//		boolean deal = true;
+			String userSelection = interactiveGameMenu(sc);
 
-		while (userSelection.equals("Deal")) {
-//			dealer.checkDeckCount();
-			dealer.shuffleDeck();
+			if (userSelection.equals("ChangePlayers")) {
+				numOfPlayers = changePlayerCount(sc);
+			}
 
-			dealer.dealToPlayers(players, dealer, players.size() - 1);
+			if (userSelection.equals("Quit")) {
+				break;
+			}
 
-			int playerCount = 1;
+			players = new ArrayList<>();
+			addPlayers(numOfPlayers, players, dealer);
 
-			for (Player player : players) {
-				System.out.println();
+			dealer.grabDeck();
 
-				boolean endTurn = false;
+			while (userSelection.equals("Deal")) {
 
-				if (player.getCardSum() == 21 && !(player instanceof Dealer)) {
-					System.out.println(green + "Player " + playerCount + " BlackJack!" + reset);
-					continue;
-				}
+				dealer.shuffleDeck();
 
-				if (checkPlayersStatus(players)) {
-					System.out.println(player.toString() + " " + green + playerCount + " " + "Turn" + reset);
-				}
+				dealer.dealToPlayers(players, dealer, players.size() - 1);
 
-				while (!endTurn) {
+				int playerCount = 1;
+
+				for (Player player : players) {
+					System.out.println();
+
+					boolean endTurn = false;
+
+					if (player.getCardSum() == 21 && !(player instanceof Dealer)) {
+						System.out.println(green + "Player " + playerCount + ": " + " BlackJack!" + reset);
+						continue;
+					}
 
 					if (player instanceof Dealer) {
 
-						endTurn = dealerTurn(players, player, dealer);
+						System.out.println(player.toString() + " " + green + "Turn" + reset);
 
 					} else {
-						player.getStats();
-						playerOptions();
-						endTurn = playerGameSelection(sc, player, dealer);
-						if (player.getCardSum() > 21) {
-							System.out.println(green + "Player " + playerCount + ": " + red + player.getCardSum() + " "
-									+ "BUST!" + reset);
-							break;
+						System.out.println(player.toString() + " " + green + playerCount + " " + "Turn" + reset);
+
+					}
+
+					while (!endTurn) {
+
+						if (player instanceof Dealer) {
+
+							endTurn = dealer.dealerTurn(players, player, dealer, checkPlayersStatus(players));
+
+						} else {
+							player.getStats();
+							playerOptions();
+							endTurn = playerGameSelection(sc, player, dealer);
+							if (player.getCardSum() > 21) {
+								System.out.println(green + "Player " + playerCount + ": " + red + player.getCardSum()
+										+ " " + "BUST!" + reset);
+								break;
+							}
 						}
 					}
+					playerCount++;
+				}
+				System.out.println();
+				showWinner(players, dealer);
+				System.out.println();
+				clearAllHands(players);
+
+				if (dealer.checkLowDeck()) {
+					dealer.returnCards();
 				}
 
-			}
-			System.out.println();
-			showWinner(players, dealer);
-			System.out.println();
-			clearAllHands(players);
-
-			if (dealer.checkLowDeck()) {
-				dealer.returnCards();
+				break;
 			}
 		}
-
 		sc.close();
+	}
+
+	private int changePlayerCount(Scanner sc) {
+		String message = cyan + "Enter new player count [1 min, 4 max]: ";
+		int count = VerifyScanner.inputValidation(sc, "int", message, 0, 5);
+		System.out.println(reset);
+		return count;
 	}
 
 	private void addPlayers(int numOfPlayers, ArrayList<Player> players, Dealer dealer) {
@@ -107,7 +131,6 @@ public class BlackJackApp implements ConsoleEffect {
 	}
 
 	public void playerOptions() {
-
 		System.out.println("1) Hit");
 		System.out.println("2) Stay");
 	}
@@ -133,12 +156,14 @@ public class BlackJackApp implements ConsoleEffect {
 	}
 
 	public void showWinner(ArrayList<Player> players, Dealer dealer) {
-		System.out.println(green + "Game Results:");
+		System.out.println(green + "Game Results" + reset);
+		System.out.println();
 		for (int i = 0; i < players.size() - 1; i++) {
 			int playerSum = players.get(i).getCardSum();
 			int dealerSum = dealer.getCardSum();
 
-			System.out.println("Player: " + playerSum + " Dealer: " + dealerSum);
+			System.out.println(
+					green + "Player " + (i + 1) + ": " + reset + playerSum + red + " Dealer: " + reset + dealerSum);
 
 			System.out.print(cyan);
 			if (playerSum <= 21) {
@@ -156,7 +181,7 @@ public class BlackJackApp implements ConsoleEffect {
 			} else {
 				System.out.println("DEALER WINS!");
 			}
-			System.out.print(reset);
+			System.out.println(reset);
 		}
 
 	}
@@ -174,44 +199,35 @@ public class BlackJackApp implements ConsoleEffect {
 		return playersStillInGame;
 	}
 
-	public void showGameOptions() {
-		System.out.println("1) Deal Again");
-		System.out.println("2) Quit");
-	}
-
-	public void interactiveGameMenu(Scanner sc) {
-		String message = "1) Deal \n" + "2) Change number of player \n" + "3) Quit Game";
+	public String interactiveGameMenu(Scanner sc) {
+		gameMenu();
+		String message = cyan + "Selection: ";
 		int userSelection = VerifyScanner.inputValidation(sc, "int", message, 0, 4);
-		
-		switch(userSelection) {
+		String selection = "";
+		switch (userSelection) {
+
 		case 1:
+			selection = "Deal";
 			break;
 		case 2:
+			selection = "ChangePlayers";
 			break;
 		case 3:
+			selection = "Quit";
+			System.out.println();
+			System.out.println(green + "Thank You For Playing" + reset);
 			break;
-		
 		}
-	};
+		System.out.println();
+		return selection;
+	}
 
-	public boolean dealerTurn(ArrayList<Player> players, Player player, Dealer dealer) {
-
-		boolean endTurn = false;
-
-		if (checkPlayersStatus(players)) {
-			player.getStats();
-
-			if (player.getCardSum() > 17) {
-				endTurn = true;
-			} else {
-				Card cardDelt = dealer.dealCard();
-				System.out.println(magenta + cardDelt + reset);
-				player.addToHand(cardDelt);
-			}
-		} else {
-			endTurn = true;
-		}
-		return endTurn;
+	public void gameMenu() {
+		System.out.println(magenta + "       " + underline + "Game Menu" + reset);
+		System.out.println("1) Deal");
+		System.out.println("2) Change number of players");
+		System.out.println("3) Quit Game");
 
 	}
+
 }

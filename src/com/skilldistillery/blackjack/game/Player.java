@@ -30,8 +30,9 @@ public class Player implements ConsoleEffect {
 	}
 
 	public void getStats() {
-		String stats = this.hand.toString() + " Total: " + hand.getHandValue();
+		String stats = this.hand.toString() + green + " Total: " + hand.getHandValue() + reset;
 
 		System.out.println(stats);
+		System.out.println();
 	}
 }

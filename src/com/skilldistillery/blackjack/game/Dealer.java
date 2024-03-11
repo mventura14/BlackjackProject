@@ -63,4 +63,25 @@ public class Dealer extends Player implements ConsoleEffect {
 		}
 
 	}
+
+	public boolean dealerTurn(ArrayList<Player> players, Player player, Dealer dealer, boolean playerStatus) {
+
+		boolean endTurn = false;
+
+		if (playerStatus) {
+			player.getStats();
+
+			if (player.getCardSum() >= 17) {
+				endTurn = true;
+			} else {
+				Card cardDelt = dealer.dealCard();
+				System.out.println(magenta + cardDelt + reset);
+				player.addToHand(cardDelt);
+			}
+		} else {
+			endTurn = true;
+		}
+		return endTurn;
+
+	}
 }
